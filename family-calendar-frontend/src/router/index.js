@@ -1,20 +1,32 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '../store/auth'
 
-import HomeView from '../pages/HomeView.vue'
-//import Calendar from '../pages/CalendarView.vue'
-//import Login from '../pages/LoginView.vue'
-//import Register from '../pages/RegisterView.vue'
+import Login from '../pages/LoginView.vue'
+import Calendar from '../pages/CalendarView.vue'
 
 const routes = [
-  { path: '/', name: 'Home', component: HomeView },
-  { path: '/calendar', name: 'Calendar', component: CalendarView },
-  { path: '/login', name: 'Login', component: LoginView },
-  { path: '/register', name: 'Register', component: RegisterView },
+  { path: '/login', component: Login },
+  { 
+    path: '/calendar',
+    component: Calendar,
+    meta: { requiresAuth: true }
+  },
+  { path: '/:pathMatch(.*)*', redirect: '/login' },
 ]
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
+})
+
+// 🔒 Guard
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore()
+  if (to.meta.requiresAuth && !authStore.isAuthenticated()) {
+    next('/login')
+  } else {
+    next()
+  }
 })
 
 export default router
