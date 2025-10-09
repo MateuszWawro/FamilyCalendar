@@ -3,16 +3,14 @@ FROM node:20-alpine AS build
 
 WORKDIR /app
 
-# Kopiujemy package.json i package-lock.json
-COPY package*.json ./
+# Kopiujemy package.json z katalogu nadrzędnego
+COPY ../package*.json ./
 
-# Instalujemy zależności
 RUN npm install
 
 # Kopiujemy resztę plików frontendu
 COPY . .
 
-# Budujemy aplikację
 RUN npm run build
 
 # Stage produkcyjny z Nginx
