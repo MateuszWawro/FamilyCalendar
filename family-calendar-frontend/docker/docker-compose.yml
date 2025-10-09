@@ -8,7 +8,7 @@ services:
     container_name: family-calendar-backend
     restart: unless-stopped
     env_file:
-      - ./family-calendar-frontend/src/api/.env
+      - ./src/api/.env
     networks:
       - family-calendar-network
     labels:
