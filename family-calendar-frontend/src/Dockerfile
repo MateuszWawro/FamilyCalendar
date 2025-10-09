@@ -1,28 +1,23 @@
-# Dockerfile dla frontendu
-
-# 1. Wybieramy oficjalny obraz Node.js
+# Frontend Dockerfile
 FROM node:20-alpine AS build
 
-# 2. Ustawiamy katalog roboczy w kontenerze
 WORKDIR /app
 
-# 3. Kopiujemy tylko pliki package.json i package-lock.json z frontendu
-COPY src/package*.json ./
+# Kopiujemy package.json i package-lock.json
+COPY package*.json ./
 
-# 4. Instalujemy zależności
+# Instalujemy zależności
 RUN npm install
 
-# 5. Kopiujemy całą resztę frontendu
-COPY src/. .
+# Kopiujemy resztę plików frontendu
+COPY . .
 
-# 6. Budujemy front-end
+# Budujemy aplikację
 RUN npm run build
 
-# 7. Serwujemy aplikację np. przez nginx
+# Stage produkcyjny z Nginx
 FROM nginx:alpine
 COPY --from=build /app/build /usr/share/nginx/html
 
-# 8. Domyślny port nginx
 EXPOSE 80
-
 CMD ["nginx", "-g", "daemon off;"]
