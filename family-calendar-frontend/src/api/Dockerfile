@@ -2,7 +2,7 @@
 FROM node:20-alpine
 
 # Katalog roboczy w kontenerze
-WORKDIR /app
+WORKDIR /src
 
 # Kopiowanie package.json i package-lock.json
 COPY package*.json ./
