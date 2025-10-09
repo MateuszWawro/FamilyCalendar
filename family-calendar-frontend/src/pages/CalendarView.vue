@@ -62,6 +62,11 @@
         </form>
       </div>
     </div>
+
+    <!-- TOAST WYLOGOWANIA -->
+    <div v-if="showToast" class="toast">
+      Wylogowano pomyślnie!
+    </div>
   </div>
 </template>
 
@@ -91,6 +96,7 @@ const events = ref([
 
 const showModal = ref(false)
 const newEvent = ref({ title: '', date: '', color: 'event-mama' })
+const showToast = ref(false)
 
 const calendarDays = computed(() => {
   const firstDay = new Date(currentYear.value, currentMonth.value, 1)
@@ -136,11 +142,15 @@ const addEvent = () => {
   closeModal()
 }
 
-// --- WYLOGOWANIE ---
+// --- WYLOGOWANIE Z TOAST ---
 const handleLogout = () => {
-  authStore.logout() // usuwa token i usera
-  events.value = []  // opcjonalnie czyści kalendarz
-  router.push('/login')
+  authStore.logout()
+  events.value = []
+  showToast.value = true
+  setTimeout(() => {
+    showToast.value = false
+    router.push('/login')
+  }, 1500) // toast widoczny 1,5s
 }
 </script>
 
@@ -237,6 +247,22 @@ const handleLogout = () => {
 .event-mama { background: #f87171; color: #fff; }
 .event-tata { background: #34d399; color: #fff; }
 .event-dziecko { background: #fbbf24; color: #fff; }
+
+/* Toast wylogowania */
+.toast {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  background: #10b981;
+  color: white;
+  padding: 0.8rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+  animation: fadeIn 0.3s, fadeOut 0.3s 1.2s;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
 
 /* Modal */
 .modal-overlay {
