@@ -3,12 +3,12 @@ version: '3.8'
 services:
   backend:
     build:
-      context: ./family-calendar-frontend/api
+      context: ./family-calendar-frontend/src/api
       dockerfile: Dockerfile
     container_name: family-calendar-backend
     restart: unless-stopped
     env_file:
-      - ./family-calendar-frontend/api/.env
+      - ./family-calendar-frontend/src/api/.env
     networks:
       - family-calendar-network
     labels:
