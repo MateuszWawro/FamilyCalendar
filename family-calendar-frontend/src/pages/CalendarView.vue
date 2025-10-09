@@ -2,7 +2,10 @@
   <div class="calendar-page">
     <!-- Nagłówek -->
     <header class="calendar-header">
-      <h1>📅 Kalendarz Rodzinny</h1>
+      <div class="header-top">
+        <h1>📅 Kalendarz Rodzinny</h1>
+        <button class="logout-btn" @click="handleLogout">Wyloguj</button>
+      </div>
       <div class="month-nav">
         <button @click="prevMonth">&lt;</button>
         <span>{{ monthNames[currentMonth] }} {{ currentYear }}</span>
@@ -64,6 +67,11 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '../store/auth'
+
+const router = useRouter()
+const authStore = useAuthStore()
 
 const weekDays = ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So', 'Nd']
 const monthNames = [
@@ -127,6 +135,13 @@ const addEvent = () => {
   })
   closeModal()
 }
+
+// --- WYLOGOWANIE ---
+const handleLogout = () => {
+  authStore.logout() // usuwa token i usera
+  events.value = []  // opcjonalnie czyści kalendarz
+  router.push('/login')
+}
 </script>
 
 <style scoped>
@@ -142,6 +157,27 @@ const addEvent = () => {
   align-items: center;
   margin-bottom: 1rem;
 }
+.header-top {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.logout-btn {
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.logout-btn:hover {
+  background: #dc2626;
+}
+
 .month-nav {
   display: flex;
   align-items: center;
