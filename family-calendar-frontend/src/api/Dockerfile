@@ -1,20 +1,22 @@
-# Wersja Node.js
+# Dockerfile dla backendu
+
+# 1. Oficjalny obraz Node.js
 FROM node:20-alpine
 
-# Katalog roboczy w kontenerze
-WORKDIR /src
+# 2. Ustawiamy katalog roboczy w kontenerze
+WORKDIR /app
 
-# Kopiowanie package.json i package-lock.json
-COPY package*.json ./
+# 3. Kopiujemy tylko pliki package.json i package-lock.json z backendu
+COPY src/api/package*.json ./
 
-# Instalacja zależności
+# 4. Instalujemy zależności
 RUN npm install
 
-# Kopiowanie reszty aplikacji
-COPY . .
+# 5. Kopiujemy całą resztę backendu
+COPY src/api/. .
 
-# Port, który będzie expose
-EXPOSE 3000
+# 6. Eksponujemy port aplikacji (np. 5000)
+EXPOSE 5000
 
-# Uruchomienie aplikacji
-CMD ["node", "index.js"]
+# 7. Uruchamiamy backend
+CMD ["npm", "start"]

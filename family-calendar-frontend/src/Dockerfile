@@ -1,14 +1,28 @@
-# Build stage
-FROM node:20-alpine as build
+# Dockerfile dla frontendu
 
-WORKDIR /src
-COPY package*.json ./
+# 1. Wybieramy oficjalny obraz Node.js
+FROM node:20-alpine AS build
+
+# 2. Ustawiamy katalog roboczy w kontenerze
+WORKDIR /app
+
+# 3. Kopiujemy tylko pliki package.json i package-lock.json z frontendu
+COPY src/package*.json ./
+
+# 4. Instalujemy zależności
 RUN npm install
-COPY . .
+
+# 5. Kopiujemy całą resztę frontendu
+COPY src/. .
+
+# 6. Budujemy front-end
 RUN npm run build
 
-# Nginx stage
+# 7. Serwujemy aplikację np. przez nginx
 FROM nginx:alpine
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=build /app/build /usr/share/nginx/html
+
+# 8. Domyślny port nginx
 EXPOSE 80
+
 CMD ["nginx", "-g", "daemon off;"]
