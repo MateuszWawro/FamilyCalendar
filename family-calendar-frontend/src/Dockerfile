@@ -9,10 +9,10 @@ COPY package*.json ./
 # Instalujemy zależności
 RUN npm install
 
-# Kopiujemy cały frontend (z index.html i src/)
+# Kopiujemy cały frontend (index.html i src/)
 COPY . .
 
-# Budujemy frontend
+# Budujemy frontend (vite tworzy dist w WORKDIR, czyli /app)
 RUN npm run build
 
 # Stage 2: Nginx do serwowania statycznych plików
