@@ -11,18 +11,15 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      DB_HOST: db
+      DB_HOST: 192.168.1.86
       DB_PORT: 5432
       DB_USER: postgres
-      DB_PASSWORD: ${DB_PASSWORD:-postgres}
-      DB_NAME: family_calendar
-      JWT_SECRET: ${JWT_SECRET}
+      DB_PASSWORD: mateusz
+      DB_NAME: family_calendar_dev
+      JWT_SECRET: your_super_secret_jwt_key_min_64_chars_random_string_here
       FRONTEND_URL: http://localhost:5173,http://localhost
     ports:
       - "3000:3000"
-    depends_on:
-      db:
-        condition: service_healthy
     networks:
       - family-calendar-network
     labels:
@@ -47,10 +44,6 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(`family-calendar.wawro.ovh`)"
       - "traefik.http.services.frontend.loadbalancer.server.port=80"
-
-volumes:
-  postgres_data:
-
 networks:
   family-calendar-network:
     driver: bridge
