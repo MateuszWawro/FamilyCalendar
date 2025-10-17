@@ -11,39 +11,47 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      DB_HOST: 192.168.1.86
+      DB_HOST: db
       DB_PORT: 5432
       DB_USER: postgres
-      DB_PASSWORD: mateusz
-      DB_NAME: family_calendar_dev
-      JWT_SECRET: your_super_secret_jwt_key_min_64_chars_random_string_here
-      FRONTEND_URL: http://localhost:5173,http://localhost
-    ports:
-      - "3000:3000"
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_NAME: family_calendar
+      JWT_SECRET: ${JWT_SECRET}
+      FRONTEND_URL: https://family-calendar.wawro.ovh,http://family-calendar.wawro.ovh
+      VIRTUAL_HOST: api.family-calendar.wawro.ovh
+      VIRTUAL_PORT: 3000
+      LETSENCRYPT_HOST: api.family-calendar.wawro.ovh
+      LETSENCRYPT_EMAIL: your-email@example.com
+    expose:
+      - "3000"
     networks:
       - family-calendar-network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`api.family-calendar.wawro.ovh`)"
-      - "traefik.http.services.backend.loadbalancer.server.port=3000"
-
   # Frontend
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        VITE_API_URL: https://api.family-calendar.wawro.ovh/api
     container_name: family-calendar-frontend
     restart: unless-stopped
-    ports:
-      - "81:80"
+    expose:
+      - "80"
     depends_on:
       - backend
     networks:
       - family-calendar-network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`family-calendar.wawro.ovh`)"
-      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+    environment:
+      # Dla jwilder/nginx-proxy
+      VIRTUAL_HOST: family-calendar.wawro.ovh
+      VIRTUAL_PORT: 80
+      LETSENCRYPT_HOST: family-calendar.wawro.ovh
+      LETSENCRYPT_EMAIL: your-email@example.com
+
+volumes:
+  postgres_data:
+
 networks:
   family-calendar-network:
-    driver: bridge
+    external: true
+    name: nginx-proxy  # Nazwa sieci jwilder/nginx-proxy
