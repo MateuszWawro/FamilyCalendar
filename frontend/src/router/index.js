@@ -1,32 +1,54 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from '../store/auth'
-
-import Login from '../pages/LoginView.vue'
-import Calendar from '../pages/CalendarView.vue'
+import { createRouter, createWebHistory } from 'vue-router';
+import { useAuthStore } from '../store/auth';
 
 const routes = [
-  { path: '/login', component: Login },
-  { 
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('../pages/LoginView.vue'),
+    meta: { guest: true }
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: () => import('../pages/RegisterView.vue'),
+    meta: { guest: true }
+  },
+  {
     path: '/calendar',
-    component: Calendar,
+    name: 'Calendar',
+    component: () => import('../pages/CalendarView.vue'),
     meta: { requiresAuth: true }
   },
-  { path: '/:pathMatch(.*)*', redirect: '/login' },
-]
+  {
+    path: '/',
+    redirect: '/calendar'
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/login'
+  }
+];
 
 const router = createRouter({
   history: createWebHistory(),
-  routes,
-})
+  routes
+});
 
-// 🔒 Guard
+// Navigation guard
 router.beforeEach((to, from, next) => {
-  const authStore = useAuthStore()
-  if (to.meta.requiresAuth && !authStore.isAuthenticated()) {
-    next('/login')
-  } else {
-    next()
-  }
-})
+  const authStore = useAuthStore();
+  const isAuthenticated = authStore.isAuthenticated;
 
-export default router
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    // Strona wymaga autoryzacji, ale użytkownik nie jest zalogowany
+    next('/login');
+  } else if (to.meta.guest && isAuthenticated) {
+    // Użytkownik zalogowany próbuje wejść na stronę dla gości (login/register)
+    next('/calendar');
+  } else {
+    next();
+  }
+});
+
+export default router;

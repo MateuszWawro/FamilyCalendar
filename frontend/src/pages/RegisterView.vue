@@ -1,18 +1,28 @@
 <template>
-  <div class="login-page">
-    <div class="login-left">
+  <div class="register-page">
+    <div class="register-left">
       <div class="overlay-content">
         <h1>📅 Family Calendar</h1>
-        <p>Organizuj życie rodziny w jednym miejscu</p>
+        <p>Dołącz do nas już dziś!</p>
       </div>
     </div>
 
-    <div class="login-right">
-      <div class="login-card">
-        <h2>Witaj ponownie!</h2>
-        <p class="subtitle">Zaloguj się aby kontynuować</p>
+    <div class="register-right">
+      <div class="register-card">
+        <h2>Utwórz konto</h2>
+        <p class="subtitle">Zacznij organizować życie rodziny</p>
 
-        <form @submit.prevent="handleLogin">
+        <form @submit.prevent="handleRegister">
+          <div class="form-group">
+            <label>Imię (opcjonalne)</label>
+            <input
+              v-model="name"
+              type="text"
+              placeholder="Twoje imię"
+              :disabled="loading"
+            />
+          </div>
+
           <div class="form-group">
             <label>Email</label>
             <input
@@ -29,7 +39,18 @@
             <input
               v-model="password"
               type="password"
-              placeholder="••••••••"
+              placeholder="Min. 6 znaków"
+              required
+              :disabled="loading"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Potwierdź hasło</label>
+            <input
+              v-model="passwordConfirm"
+              type="password"
+              placeholder="Powtórz hasło"
               required
               :disabled="loading"
             />
@@ -38,12 +59,12 @@
           <div v-if="error" class="error-message">{{ error }}</div>
 
           <button type="submit" class="btn-primary" :disabled="loading">
-            {{ loading ? 'Logowanie...' : 'Zaloguj się' }}
+            {{ loading ? 'Rejestrowanie...' : 'Zarejestruj się' }}
           </button>
         </form>
 
-        <div class="register-link">
-          Nie masz konta? <router-link to="/register">Zarejestruj się</router-link>
+        <div class="login-link">
+          Masz już konto? <router-link to="/login">Zaloguj się</router-link>
         </div>
       </div>
     </div>
@@ -58,20 +79,34 @@ import { useAuthStore } from '../store/auth';
 const router = useRouter();
 const authStore = useAuthStore();
 
+const name = ref('');
 const email = ref('');
 const password = ref('');
+const passwordConfirm = ref('');
 const loading = ref(false);
 const error = ref('');
 
-const handleLogin = async () => {
-  loading.value = true;
+const handleRegister = async () => {
   error.value = '';
 
+  // Walidacja
+  if (password.value !== passwordConfirm.value) {
+    error.value = 'Hasła nie są identyczne';
+    return;
+  }
+
+  if (password.value.length < 6) {
+    error.value = 'Hasło musi mieć minimum 6 znaków';
+    return;
+  }
+
+  loading.value = true;
+
   try {
-    await authStore.login(email.value, password.value);
+    await authStore.register(email.value, password.value, name.value || null);
     router.push('/calendar');
   } catch (err) {
-    error.value = err.response?.data?.message || 'Błąd logowania';
+    error.value = err.response?.data?.message || 'Błąd rejestracji';
   } finally {
     loading.value = false;
   }
@@ -79,13 +114,13 @@ const handleLogin = async () => {
 </script>
 
 <style scoped>
-.login-page {
+.register-page {
   display: flex;
   min-height: 100vh;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.login-left {
+.register-left {
   flex: 1;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   display: flex;
@@ -110,7 +145,7 @@ const handleLogin = async () => {
   opacity: 0.9;
 }
 
-.login-right {
+.register-right {
   flex: 1;
   display: flex;
   align-items: center;
@@ -119,7 +154,7 @@ const handleLogin = async () => {
   background: #f8fafc;
 }
 
-.login-card {
+.register-card {
   background: white;
   padding: 2.5rem;
   border-radius: 16px;
@@ -128,7 +163,7 @@ const handleLogin = async () => {
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 }
 
-.login-card h2 {
+.register-card h2 {
   margin: 0 0 0.5rem 0;
   color: #1e293b;
   font-size: 1.8rem;
@@ -201,28 +236,28 @@ const handleLogin = async () => {
   cursor: not-allowed;
 }
 
-.register-link {
+.login-link {
   text-align: center;
   margin-top: 1.5rem;
   color: #64748b;
 }
 
-.register-link a {
+.login-link a {
   color: #667eea;
   text-decoration: none;
   font-weight: 600;
 }
 
-.register-link a:hover {
+.login-link a:hover {
   text-decoration: underline;
 }
 
 @media (max-width: 768px) {
-  .login-page {
+  .register-page {
     flex-direction: column;
   }
 
-  .login-left {
+  .register-left {
     min-height: 200px;
   }
 
