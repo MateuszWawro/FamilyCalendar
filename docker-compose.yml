@@ -48,10 +48,6 @@ services:
       LETSENCRYPT_HOST: family-calendar.wawro.ovh
       LETSENCRYPT_EMAIL: your-email@example.com
 
-volumes:
-  postgres_data:
-
 networks:
   family-calendar-network:
-    external: true
-    name: nginx-proxy  # Nazwa sieci jwilder/nginx-proxy
+    external: true# Nazwa sieci jwilder/nginx-proxy
