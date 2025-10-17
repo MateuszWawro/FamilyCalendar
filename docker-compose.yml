@@ -50,4 +50,4 @@ services:
 
 networks:
   family-calendar-network:
-    external: true# Nazwa sieci jwilder/nginx-proxy
+    external: true
