@@ -56,21 +56,23 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // CORS
-const allowedOrigins = process.env.FRONTEND_URL 
+const allowedOrigins = process.env.FRONTEND_URL
   ? process.env.FRONTEND_URL.split(',')
   : ['http://localhost:5173', 'https://family-calendar.wawro.ovh'];
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Zezwól na brak origin (np. Postman, mobilne aplikacje)
+    console.log('🌍 CORS request from:', origin);
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('Niedozwolone pochodzenie CORS'));
+      console.warn('🚫 CORS blocked for origin:', origin);
+      callback(null, false); // nie rzuca błędu (unikamy 500)
     }
   },
-  credentials: true
+  credentials: true,
 }));
+app.options('*', cors());
 
 // Body parser
 app.use(express.json());
