@@ -58,7 +58,7 @@ app.use(limiter);
 // CORS
 const allowedOrigins = process.env.FRONTEND_URL 
   ? process.env.FRONTEND_URL.split(',')
-  : ['http://localhost:5173'];
+  : ['http://localhost:5173', 'https://family-calendar.wawro.ovh'];
 
 app.use(cors({
   origin: (origin, callback) => {
