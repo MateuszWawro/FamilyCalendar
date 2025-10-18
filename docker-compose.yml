@@ -15,7 +15,7 @@ services:
       DB_PORT: 5432
       DB_USER: postgres
       DB_PASSWORD: mateusz
-      DB_NAME: family_calendar_dev
+      DB_NAME: calendar_dev
       JWT_SECRET: your_super_secret_jwt_key_min_64_chars_random_string_here
       FRONTEND_URL: https://family-calendar.wawro.ovh,http://family-calendar.wawro.ovh
       VIRTUAL_HOST: api.family-calendar.wawro.ovh
