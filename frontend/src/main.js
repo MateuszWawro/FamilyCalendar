@@ -11,3 +11,5 @@ app.use(createPinia())
 app.use(router)
 
 app.mount('#app')
+
+console.log('🌍 API_URL:', import.meta.env.VITE_API_URL);
