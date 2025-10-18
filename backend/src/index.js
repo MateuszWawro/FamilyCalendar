@@ -1,15 +1,42 @@
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Dla ES modules musimy ręcznie znaleźć __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Załaduj .env z dokładną ścieżką
+const envPath = path.resolve(__dirname, '../.env');
+console.log('📁 Ładowanie .env z:', envPath);
+
+const result = dotenv.config({ path: envPath });
+
+if (result.error) {
+  console.error('❌ Błąd ładowania .env:', result.error);
+  process.exit(1);
+}
+
+console.log('✅ .env załadowany pomyślnie');
+console.log('🔍 Sprawdzanie zmiennych środowiskowych:');
+console.log('  NODE_ENV:', process.env.NODE_ENV);
+console.log('  PORT:', process.env.PORT);
+console.log('  DB_HOST:', process.env.DB_HOST);
+console.log('  DB_PORT:', process.env.DB_PORT);
+console.log('  DB_USER:', process.env.DB_USER);
+console.log('  DB_PASSWORD:', process.env.DB_PASSWORD ? `***${process.env.DB_PASSWORD.length} chars***` : '❌ UNDEFINED');
+console.log('  DB_NAME:', process.env.DB_NAME);
+console.log('  JWT_SECRET:', process.env.JWT_SECRET ? `***${process.env.JWT_SECRET.length} chars***` : '❌ UNDEFINED');
+console.log('');
+
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import dotenv from 'dotenv';
 
 // Importy tras
 import authRoutes from './routes/auth.js';
 import eventsRoutes from './routes/events.js';
-
-// Konfiguracja env
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
